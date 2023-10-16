@@ -38,7 +38,11 @@ module.exports.getUserById = (req, res) => {
 module.exports.editUserData = (req, res) => {
   const { name, about } = req.body;
   if (req.user._id) {
-    User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    User.findByIdAndUpdate(
+      req.user._id,
+      { name, about },
+      { new: true, runValidators: true },
+    )
       .then((user) => res.send(user))
       .catch((err) => {
         if (err.name === 'ValidationError') {
@@ -57,10 +61,16 @@ module.exports.editUserAvatar = (req, res) => {
     User.findByIdAndUpdate(
       req.user._id,
       { avatar: req.body.avatar },
-      { new: true },
+      { new: true, runValidators: true },
     )
       .then((user) => res.send(user))
-      .catch(() => res.status(404).send({ message: 'Пользователь не найден' }));
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(400).send({ message: 'Переданы некорректные данные' });
+        } else {
+          res.status(404).send({ message: 'Пользователь не найден' });
+        }
+      });
   } else {
     res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
