@@ -1,14 +1,13 @@
+const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-
-const httpConstans = require('http2').constants;
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.addCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(httpConstans.HTTP_STATUS_OK).send(card))
+    .then((card) => res.status(httpConstants.HTTP_STATUS_OK).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(err.message));
@@ -23,7 +22,7 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail()
     .then(() => {
       res
-        .status(httpConstans.HTTP_STATUS_OK)
+        .status(httpConstants.HTTP_STATUS_OK)
         .send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
@@ -40,7 +39,7 @@ module.exports.deleteCard = (req, res, next) => {
 module.exports.getCard = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
-    .then((cards) => res.status(httpConstans.HTTP_STATUS_OK).send(cards))
+    .then((cards) => res.status(httpConstants.HTTP_STATUS_OK).send(cards))
     .catch(next);
 };
 
@@ -55,7 +54,7 @@ module.exports.likeCard = (req, res, next) => {
     .orFail()
     .populate(['owner', 'likes'])
     .then((card) => {
-      res.status(httpConstans.HTTP_STATUS_OK).send(card);
+      res.status(httpConstants.HTTP_STATUS_OK).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
@@ -79,7 +78,7 @@ module.exports.dislikeCard = (req, res, next) => {
     .orFail()
     .populate(['owner', 'likes'])
     .then((card) => {
-      res.status(httpConstans.HTTP_STATUS_OK).send(card);
+      res.status(httpConstants.HTTP_STATUS_OK).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {

@@ -1,14 +1,13 @@
+const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
 const User = require('../models/user');
-
-const httpConstans = require('http2').constants;
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.addUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(httpConstans.HTTP_STATUS_CREATED).send(user))
+    .then((user) => res.status(httpConstants.HTTP_STATUS_CREATED).send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(err.message));
@@ -20,7 +19,7 @@ module.exports.addUser = (req, res, next) => {
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(httpConstans.HTTP_STATUS_OK).send(users))
+    .then((users) => res.status(httpConstants.HTTP_STATUS_OK).send(users))
     .catch(next);
 };
 
@@ -28,7 +27,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
-      res.status(httpConstans.HTTP_STATUS_OK).send(user);
+      res.status(httpConstants.HTTP_STATUS_OK).send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -49,7 +48,7 @@ module.exports.editUserData = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .orFail()
-    .then((user) => res.status(httpConstans.HTTP_STATUS_OK).send(user))
+    .then((user) => res.status(httpConstants.HTTP_STATUS_OK).send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(err.message));
@@ -68,7 +67,7 @@ module.exports.editUserAvatar = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .orFail()
-    .then((user) => res.status(httpConstans.HTTP_STATUS_OK).send(user))
+    .then((user) => res.status(httpConstants.HTTP_STATUS_OK).send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(err.message));
