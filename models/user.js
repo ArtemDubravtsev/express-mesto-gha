@@ -1,26 +1,26 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcryptjs");
-const UnauthorizedError = require("../errors/UnauthorizedError");
+const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      default: "Жак-Ив Кусто",
+      default: 'Жак-Ив Кусто',
       minlength: 2,
       maxlength: 30,
     },
     about: {
       type: String,
-      default: "Исследователь",
+      default: 'Исследователь',
       minlength: 2,
       maxlength: 30,
     },
     avatar: {
       type: String,
       default:
-        "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+        'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
     email: {
       type: String,
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
         validator(email) {
           validator.isEmail(email);
         },
-        message: "Введите email",
+        message: 'Введите email',
       },
     },
     password: {
@@ -39,26 +39,26 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
-  password
+  password,
 ) {
   return this.findOne({ email })
-    .select("+password")
+    .select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError("Неправильные почта или пароль");
+        throw new UnauthorizedError('Неправильные почта или пароль');
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          throw new UnauthorizedError("Неправильные почта или пароль");
+          throw new UnauthorizedError('Неправильные почта или пароль');
         }
         return user;
       });
     });
 };
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);
